@@ -13,7 +13,11 @@ class Car {
 		int directionDifference;
 		int head;
 		int tail;
+		int lightStep;
 		bool active;
+
+		uint32_t* colors;
+		int colorLength;
 
 	public:
 		Car(Adafruit_DotStar* strip);
@@ -25,6 +29,7 @@ class Car {
 		int getHead();
 		int getTail();
 		int getPathLength();
+		bool nextStep();
 };
 
 #endif
