@@ -15,12 +15,13 @@ class Car {
 		int tail;
 		int lightStep;
 		bool active;
+		int number;
 
 		uint32_t* colors;
 		int colorLength;
 
 	public:
-		Car(Adafruit_DotStar* strip);
+		Car(Adafruit_DotStar* strip, int number);
 		bool create();
 		bool isActive();
 		bool setActive(bool active);

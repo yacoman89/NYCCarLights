@@ -10,7 +10,12 @@
 #define CREATE    20
 #define MAXCARS   5
 
-Adafruit_DotStar strip = Adafruit_DotStar(NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
+
+Adafruit_DotStar strip_test = Adafruit_DotStar(NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
+// Adafruit_DotStar *strip;
+
+Adafruit_DotStar* strip = &strip_test;
+
 int head = 0, tail = -2;
 // hex   Green Red   Blue
 // 0x    00    00    00
@@ -32,54 +37,64 @@ void setup() {
     Serial.println("Random number generator started.");
 
     for (int i = 0; i < MAXCARS; i++) {
-        Car *car = new Car(&strip);
+        Car *car = new Car(strip, i);
         cars[i] = car;
     }
 
-    strip.begin();                               // Initialize pins for output
-    strip.show();                                // Turn all LEDs off ASAP
+    strip->begin();                               // Initialize pins for output
+    strip->show();                                // Turn all LEDs off ASAP
     Serial.println("LED's ready.");
     Serial.println((int)strip);
     Serial.println("Simulation starting.");
 }
 
 void loop() {
+    // Counter for each interation
+    if (createCar++ == CREATE) {
+        Serial.println("Create car?");
+        createCar = 0;
 
-    // if (createCar++ == CREATE) {
-    //     createCar = 0;
-    //     Serial.println("Creating new car.");
-
-    //     for (int i = 0; i < MAXCARS; i++) {
-            
-    //         if (!cars[i]->isActive()) {
-    //             cars[i]->create();
-    //             cars[i]->setActive(true);
+        for (int i = 0; i < MAXCARS; i++) {
+            // Is car disabled
+            Serial.print("Car ");
+            Serial.print(i);
+            Serial.println(" inactive car?");
+            // 0 = Active
+            // 1 = Disabled
+            Serial.println(!cars[i]->isActive());
+            // If disabled
+            if (!cars[i]->isActive()) {
+                Serial.println("Creating new car!");
+                Serial.print("Car number: ");
+                Serial.println(cars[i]->create());
+                cars[i]->setActive(true);
                 
-    //             Serial.print("Start: ");
-    //             Serial.print(cars[i]->getStart());
-    //             Serial.print(", End: ");
-    //             Serial.print(cars[i]->getEnd());
-    //             Serial.print(", Length: ");
-    //             Serial.print(cars[i]->getPathLength());
-    //             Serial.print(", Head: ");
-    //             Serial.print(cars[i]->getHead());
-    //             Serial.print(", Tail: ");
-    //             Serial.println(cars[i]->getTail());
+                Serial.print("Start: ");
+                Serial.print(cars[i]->getStart());
+                Serial.print(", End: ");
+                Serial.print(cars[i]->getEnd());
+                Serial.print(", Length: ");
+                Serial.print(cars[i]->getPathLength());
+                Serial.print(", Head: ");
+                Serial.print(cars[i]->getHead());
+                Serial.print(", Tail: ");
+                Serial.println(cars[i]->getTail());
                 
-    //             Serial.println("Car created!");
-    //             break;
-    //         }
-    //     }
-    // }
+                Serial.println("Car created!");
+                break;
+            }
+        }
+    }
 
-    // for (int i = 0; i < MAXCARS; i++) {
-    //     cars[0]->nextStep();
-    //     delay(500);
-    // }
+    for (int i = 0; i < MAXCARS; i++) {
+        cars[0]->nextStep();
+        delay(15);
+    }
+    strip->show();
 
-    Car vet(&strip);
-    vet.nextStep();
-    delay(1000);
+    // Car vet(strip);
+    // vet.nextStep();
+    // delay(1000);
 
     // for (int i = 0; i < colorLength; i++) {
     //     strip.setPixelColor(head, colors[i]);

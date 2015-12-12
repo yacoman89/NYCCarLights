@@ -1,7 +1,9 @@
 #include "car.h"
 
-Car::Car(Adafruit_DotStar* strip) {
+Car::Car(Adafruit_DotStar* strip, int number) {
 	this->strip = strip;
+	this->strip->begin();
+	this->number;
 
 	// hex   Green Red   Blue
 	// 0x    00    00    00
@@ -37,7 +39,7 @@ bool Car::create() {
 	this->lightStep = 0;
 	this->active = false;
 
-	return true;
+	return this->number;
 }
 
 bool Car::isActive() {
@@ -74,23 +76,28 @@ int Car::getPathLength() {
 }
 
 bool Car::nextStep() {
-	Serial.println((int)this->strip);
-	this->strip->setPixelColor(25, 0x101010);
 
-	// if (this->active) {
-	// 	if ((this->directionDifference > 0) && (this->lightStep == this->colorLength)) {
-	// 		this->lightStep = 0;
-	// 		this->head++;
-	// 		this->tail++;
-	// 	} else {
-	// 		this->lightStep++;
-	// 		this->strip->setPixelColor(head, this->colors[this->lightStep]);
-	// 		this->strip->setPixelColor(tail, this->colors[this->colorLength - this->lightStep - 1]);
-	// 	}
-
-	// 	if ((this->tail == this->endLed) && (this->lightStep == this->colorLength))
-	// 		this->active = false;
-	// }
+	if (this->active) {
+		if ((this->directionDifference > 0) && (this->lightStep == this->colorLength)) {
+			this->lightStep = 0;
+			this->head++;
+			this->tail++;
+		} else {
+			this->lightStep++;
+			this->strip->setPixelColor(head, this->colors[this->lightStep]);
+			this->strip->setPixelColor(tail, this->colors[this->colorLength - this->lightStep - 1]);
+		}
+		// && (this->lightStep == this->colorLength))
+		if (this->tail == this->endLed)  {
+			Serial.println("DEAD!");
+			this->strip->setPixelColor(head, this->colors[0]);
+			this->strip->setPixelColor(tail + this->directionDifference, this->colors[0]);
+			this->strip->setPixelColor(tail, this->colors[0]);
+			this->active = false;
+		}
+			
+	}
+	this->strip->show();
 
 	return this->active;
 }
