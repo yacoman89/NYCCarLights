@@ -2,8 +2,6 @@
 #define CAR_H
 
 #include "Arduino.h"
-#include <Adafruit_DotStar.h>
-#include <SPI.h>
 
 class Car {
 	private:

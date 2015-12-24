@@ -62,6 +62,7 @@ void loop() {
                 // Serial.println("Creating new car!");
                 // Serial.print("Car number: ");
                 // Serial.println(cars[i]->create());
+                cars[i]->create();
                 cars[i]->setActive(true);
                 
                 // Serial.print("Start: ");

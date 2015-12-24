@@ -13,8 +13,8 @@ Car::Car(uint32_t* leds, int ledCount, int number) {
 bool Car::create() {
 	randomSeed(analogRead(0));
 
-	this->startLed = random(0, 60);
-	this->endLed = random(0, 60);
+	this->startLed = random(0, 100) % 60;
+	this->endLed = random(0, 100) % 60;
 	this->head = this->startLed;
 
 	if (this->startLed < this->endLed) {
@@ -66,15 +66,6 @@ int Car::getPathLength() {
 bool Car::nextStep() {
 
 	if (this->active) {
-
-		if (this->directionDifference > 0) {
-			this->head++;
-			this->tail++;
-		} else {
-			this->head--;
-			this->tail--;
-		}
-
 		int headTemp, tailTemp;
 
 		if (head < 0)
@@ -94,8 +85,16 @@ bool Car::nextStep() {
 		leds[headTemp] = 0x050505;
 		leds[tailTemp] = 0x050505;
 
+		if (this->directionDifference > 0) {
+			this->head++;
+			this->tail++;
+		} else {
+			this->head--;
+			this->tail--;
+		}
+
 		if (tailTemp == this->endLed || headTemp == this->endLed)
-			this->active = false;	
+			this->active = false;
 	}
 
 	return this->active;
