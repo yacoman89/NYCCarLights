@@ -1,22 +1,11 @@
 #include "car.h"
 
-Car::Car(Adafruit_DotStar* strip, int number) {
-	this->strip = strip;
-	this->strip->begin();
-	this->number;
+Car::Car(uint32_t* leds, int ledCount, int number) {
+	this->leds = leds;
+	this->number = number;
 
-	// hex   Green Red   Blue
-	// 0x    00    00    00
-	uint32_t colorList[] = { 0x000000
-		                   , 0x010101
-		                   , 0x020202
-		                   , 0x030303
-		                   , 0x040404
-		                   , 0x050505
-		                   };
-    this->colorLength = sizeof(colorList)/sizeof(uint32_t);
-    this->colors = new uint32_t[this->colorLength];
-    this->colors = colorList;
+	this->ledLength = ledCount;
+	Serial.println(this->ledLength);
 
 	this->create();
 }
@@ -30,13 +19,12 @@ bool Car::create() {
 
 	if (this->startLed < this->endLed) {
 		this->directionDifference = 1;
-		this->tail = this->head - 2;
+		this->tail = this->head - 1;
 	} else {
 		this->directionDifference = -1;
-		this->tail = this->head + 2;
+		this->tail = this->head + 1;
 	}
 
-	this->lightStep = 0;
 	this->active = false;
 
 	return this->number;
@@ -78,26 +66,37 @@ int Car::getPathLength() {
 bool Car::nextStep() {
 
 	if (this->active) {
-		if ((this->directionDifference > 0) && (this->lightStep == this->colorLength)) {
-			this->lightStep = 0;
+
+		if (this->directionDifference > 0) {
 			this->head++;
 			this->tail++;
 		} else {
-			this->lightStep++;
-			this->strip->setPixelColor(head, this->colors[this->lightStep]);
-			this->strip->setPixelColor(tail, this->colors[this->colorLength - this->lightStep - 1]);
+			this->head--;
+			this->tail--;
 		}
-		// && (this->lightStep == this->colorLength))
-		if (this->tail == this->endLed)  {
-			Serial.println("DEAD!");
-			this->strip->setPixelColor(head, this->colors[0]);
-			this->strip->setPixelColor(tail + this->directionDifference, this->colors[0]);
-			this->strip->setPixelColor(tail, this->colors[0]);
-			this->active = false;
-		}
-			
+
+		int headTemp, tailTemp;
+
+		if (head < 0)
+			headTemp = 0;
+		else if (head > this->ledLength - 1)
+			headTemp = this->ledLength - 1;
+		else
+			headTemp = head;
+
+		if (tail < 0)
+			tailTemp = 0;
+		else if (tail > this->ledLength - 1)
+			tailTemp = this->ledLength - 1;
+		else
+			tailTemp = tail;
+
+		leds[headTemp] = 0x050505;
+		leds[tailTemp] = 0x050505;
+
+		if (tailTemp == this->endLed || headTemp == this->endLed)
+			this->active = false;	
 	}
-	this->strip->show();
 
 	return this->active;
 }

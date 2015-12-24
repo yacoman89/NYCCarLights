@@ -7,21 +7,21 @@
 
 class Car {
 	private:
-		Adafruit_DotStar* strip;
+		uint32_t* leds;
+		int ledLength;
+
 		int startLed;
 		int endLed;
 		int directionDifference;
 		int head;
 		int tail;
-		int lightStep;
 		bool active;
 		int number;
 
-		uint32_t* colors;
-		int colorLength;
+		uint32_t on;
 
 	public:
-		Car(Adafruit_DotStar* strip, int number);
+		Car(uint32_t* leds, int ledCount, int number);
 		bool create();
 		bool isActive();
 		bool setActive(bool active);
